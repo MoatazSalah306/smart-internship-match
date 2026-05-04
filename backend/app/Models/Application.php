@@ -10,7 +10,7 @@ class Application extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'internship_id', 'status', 'applied_at'];
+    protected $fillable = ['student_id', 'internship_id', 'status', 'applied_at', 'match_score'];
 
     public function student(): BelongsTo
     {

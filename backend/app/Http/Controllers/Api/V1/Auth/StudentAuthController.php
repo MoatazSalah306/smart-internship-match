@@ -24,7 +24,10 @@ class StudentAuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'message' => 'Please check the form for errors.',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::create([
@@ -44,7 +47,8 @@ class StudentAuthController extends Controller
         $token = $user->createToken('student-token', ['student:apply'])->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('student'),
+            'user' => $user,
+            'profile' => $user->student,
             'token' => $token,
         ], 201);
     }
@@ -65,7 +69,8 @@ class StudentAuthController extends Controller
         $token = $user->createToken('student-token', ['student:apply'])->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('student'),
+            'user' => $user,
+            'profile' => $user->student,
             'token' => $token,
         ]);
     }

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
@@ -14,6 +16,10 @@ class CompanyAuthController extends Controller
 {
     public function register(Request $request)
     {
+        if (!$request->has('company_name') && $request->has('name')) {
+            $request->merge(['company_name' => $request->name]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -25,30 +31,52 @@ class CompanyAuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'message' => 'Please check the form for errors.',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'company',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        Company::create([
-            'user_id' => $user->id,
-            'company_name' => $request->company_name,
-            'industry' => $request->industry,
-            'website' => $request->website,
-            'description' => $request->description,
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'company',
+            ]);
 
-        $token = $user->createToken('company-token', ['company:manage-internship'])->plainTextToken;
+            Company::create([
+                'user_id' => $user->id,
+                'company_name' => $request->company_name,
+                'industry' => $request->industry,
+                'website' => $request->website,
+                'description' => $request->description,
+            ]);
 
-        return response()->json([
-            'user' => $user->load('company'),
-            'token' => $token,
-        ], 201);
+            $token = $user->createToken('company-token', ['company:manage-internship'])->plainTextToken;
+
+            DB::commit();
+
+            return response()->json([
+                'user' => $user,
+                'profile' => $user->company,
+                'token' => $token,
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Company Registration Error: ' . $e->getMessage(), [
+                'request' => $request->except(['password', 'password_confirmation']),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'Registration failed due to a server error. Please try again later.',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
     }
 
     public function login(Request $request)
@@ -67,7 +95,8 @@ class CompanyAuthController extends Controller
         $token = $user->createToken('company-token', ['company:manage-internship'])->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('company'),
+            'user' => $user,
+            'profile' => $user->company,
             'token' => $token,
         ]);
     }

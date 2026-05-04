@@ -4,29 +4,31 @@ namespace App\Policies;
 
 use App\Models\Internship;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class InternshipPolicy
 {
-    public function update(User $user, Internship $internship): Response
+    public function viewAny(User $user): bool
     {
-        if ($user->role === 'admin') {
-            return Response::allow();
-        }
-
-        return $user->role === 'company' && $user->company->id === $internship->company_id
-            ? Response::allow()
-            : Response::deny('You do not own this internship.');
+        return $user->role === 'company' || $user->role === 'admin';
     }
 
-    public function delete(User $user, Internship $internship): Response
+    public function create(User $user): bool
     {
-        if ($user->role === 'admin') {
-            return Response::allow();
-        }
+        return $user->role === 'company';
+    }
 
-        return $user->role === 'company' && $user->company->id === $internship->company_id
-            ? Response::allow()
-            : Response::deny('You do not own this internship.');
+    public function update(User $user, Internship $internship): bool
+    {
+        return $user->role === 'company' && $user->company->id === $internship->company_id;
+    }
+
+    public function delete(User $user, Internship $internship): bool
+    {
+        return $user->role === 'company' && $user->company->id === $internship->company_id;
+    }
+
+    public function restore(User $user, Internship $internship): bool
+    {
+        return $user->role === 'company' && $user->company->id === $internship->company_id;
     }
 }

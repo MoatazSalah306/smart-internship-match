@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('internship_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->integer('match_score')->default(0);
             $table->timestamp('applied_at')->useCurrent();
             $table->timestamps();
         });
