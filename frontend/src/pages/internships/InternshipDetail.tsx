@@ -27,7 +27,7 @@ export default function InternshipDetail() {
   const applyMutation = useMutation({
     mutationFn: () => ApplicationsApi.apply(Number(id), { cover_letter: coverLetter || undefined }),
     onSuccess: () => {
-      toast({ title: "Application sent", description: "We'll notify you when the company responds." });
+      toast({ title: "Application sent", description: "We'll notify you when the company responds.", variant: "success" });
       setCoverLetter("");
       qc.invalidateQueries({ queryKey: ["my-applications"] });
     },
@@ -92,21 +92,28 @@ export default function InternshipDetail() {
               <p className="mt-3 text-muted-foreground">Only student accounts can apply to internships.</p>
             )}
             {user?.role === "student" && (
-              <form
-                onSubmit={(e) => { e.preventDefault(); applyMutation.mutate(); }}
-                className="mt-4 space-y-4"
-              >
-                <Textarea
-                  rows={6}
-                  placeholder="Cover letter (optional) — tell them why you're a fit."
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  maxLength={2000}
-                />
-                <Button type="submit" disabled={applyMutation.isPending} className="shadow-brutal-sm">
-                  {applyMutation.isPending ? "Sending…" : "Submit application"}
-                </Button>
-              </form>
+              internship.has_applied ? (
+                <div className="mt-4 p-4 border-2 border-success bg-success/10 rounded-sm">
+                  <p className="text-success font-bold text-lg">You have already submitted an application for this role.</p>
+                  <Link to="/student/applications" className="text-accent underline mt-2 block font-bold">Track your application status →</Link>
+                </div>
+              ) : (
+                <form
+                  onSubmit={(e) => { e.preventDefault(); applyMutation.mutate(); }}
+                  className="mt-4 space-y-4"
+                >
+                  <Textarea
+                    rows={6}
+                    placeholder="Cover letter (optional) — tell them why you're a fit."
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    maxLength={2000}
+                  />
+                  <Button type="submit" disabled={applyMutation.isPending} className="shadow-brutal-sm">
+                    {applyMutation.isPending ? "Sending…" : "Submit application"}
+                  </Button>
+                </form>
+              )
             )}
           </div>
         </article>

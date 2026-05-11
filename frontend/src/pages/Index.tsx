@@ -80,7 +80,7 @@ const Index = () => {
               Smarter than <span className="italic text-highlight">keyword search.</span>
             </h2>
             <p className="mt-6 max-w-xl text-primary-foreground/80 text-lg">
-              Our match engine compares your skills, major, and graduation year against each role.
+              Our match engine compares your skills and profile data against each role's requirements.
               You see the percentage, and so does the company.
             </p>
           </div>

@@ -21,15 +21,15 @@ export default function CompanyDashboard() {
 
   const archive = useMutation({
     mutationFn: (id: number) => InternshipsApi.archive(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Internship archived" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Internship archived", variant: "success" }); },
   });
   const restore = useMutation({
     mutationFn: (id: number) => InternshipsApi.restore(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Restored" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Restored", variant: "success" }); },
   });
   const remove = useMutation({
     mutationFn: (id: number) => InternshipsApi.remove(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Deleted" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["company-internships"] }); toast({ title: "Deleted", variant: "success" }); },
     onError: (e) => toast({ title: "Delete failed", description: e instanceof ApiError ? e.message : "", variant: "destructive" }),
   });
 
@@ -70,7 +70,7 @@ export default function CompanyDashboard() {
               <div className="min-w-0">
                 <div className="mono-label text-muted-foreground">
                   {i.location ?? "—"} · {i.duration_months ?? "?"} mo
-                  {i.archived_at && <> · <Badge variant="outline">archived</Badge></>}
+                  {i.deleted_at && <> · <Badge variant="outline">archived</Badge></>}
                 </div>
                 <Link to={`/internships/${i.id}`} className="font-display text-2xl font-black hover:text-accent">{i.title}</Link>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2 max-w-2xl">{i.description}</p>
@@ -78,7 +78,7 @@ export default function CompanyDashboard() {
               <div className="flex flex-wrap gap-2 items-center">
                 <Button asChild variant="outline" size="sm"><Link to={`/company/internships/${i.id}/applicants`}><Users className="h-4 w-4 mr-1" /> {i.applications_count ?? 0}</Link></Button>
                 <Button asChild variant="outline" size="sm"><Link to={`/company/internships/${i.id}/edit`}><Pencil className="h-4 w-4" /></Link></Button>
-                {i.archived_at ? (
+                {i.deleted_at ? (
                   <Button variant="outline" size="sm" onClick={() => restore.mutate(i.id)}><ArchiveRestore className="h-4 w-4" /></Button>
                 ) : (
                   <Button variant="outline" size="sm" onClick={() => archive.mutate(i.id)}><Archive className="h-4 w-4" /></Button>

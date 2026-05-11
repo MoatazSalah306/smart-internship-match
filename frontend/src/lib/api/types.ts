@@ -14,8 +14,7 @@ export type Student = {
   name: string;
   email: string;
   university?: string | null;
-  major?: string | null;
-  graduation_year?: number | null;
+  phone?: string | null;
   bio?: string | null;
   skills?: string[] | null;
   cv_url?: string | null;
@@ -51,6 +50,7 @@ export type Internship = {
   deleted_at?: string | null;
   applications_count?: number;
   match_score?: number;
+  has_applied?: boolean;
   created_at?: string;
 };
 

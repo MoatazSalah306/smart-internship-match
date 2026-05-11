@@ -68,7 +68,7 @@ export default function CompanyInternshipForm() {
     mutationFn: () => isEdit ? InternshipsApi.update(Number(id), buildPayload()) : InternshipsApi.create(buildPayload()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["company-internships"] });
-      toast({ title: isEdit ? "Internship updated" : "Internship posted" });
+      toast({ title: isEdit ? "Internship updated" : "Internship posted", variant: "success" });
       navigate("/company");
     },
     onError: (e) => {

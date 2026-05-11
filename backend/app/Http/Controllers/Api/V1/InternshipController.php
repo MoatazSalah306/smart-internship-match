@@ -126,7 +126,7 @@ class InternshipController extends Controller
     {
         $this->authorize('viewAny', Internship::class);
         $company = Auth::user()->company;
-        $query = $company->internships()->with('skills');
+        $query = $company->internships()->with('skills')->withCount('applications');
         if ($request->has('archived') && $request->boolean('archived')) {
             $query->onlyTrashed();
         }

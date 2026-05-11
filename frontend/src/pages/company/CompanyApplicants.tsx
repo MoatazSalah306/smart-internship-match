@@ -30,7 +30,7 @@ export default function CompanyApplicants() {
   const setStatus = useMutation({
     mutationFn: ({ appId, status }: { appId: number; status: Application["status"] }) =>
       ApplicationsApi.updateStatus(appId, status),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["applicants", id] }); toast({ title: "Status updated" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["applicants", id] }); toast({ title: "Status updated", variant: "success" }); },
   });
 
   return (
@@ -48,7 +48,7 @@ export default function CompanyApplicants() {
           <div key={a.id} className="brutal-card p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="mono-label text-muted-foreground">{a.student?.university ?? ""} {a.student?.major ? `· ${a.student.major}` : ""}</div>
+                <div className="mono-label text-muted-foreground">{a.student?.university ?? ""} {a.student?.phone ? `· ${a.student.phone}` : ""}</div>
                 <div className="font-display text-2xl font-black mt-1">{a.student?.name ?? `Student #${a.student_id}`}</div>
                 <div className="mono-label text-muted-foreground mt-1">{a.student?.email}</div>
                 {typeof a.match_score === "number" && (

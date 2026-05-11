@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  pending: "secondary",
-  reviewed: "outline",
-  accepted: "default",
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive" | "success" | "warning"> = {
+  pending: "warning",
+  reviewed: "secondary",
+  accepted: "success",
   rejected: "destructive",
 };
 
@@ -18,7 +18,7 @@ export default function StudentApplications() {
 
   const withdraw = useMutation({
     mutationFn: (id: number) => ApplicationsApi.withdraw(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["my-applications"] }); toast({ title: "Application withdrawn" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["my-applications"] }); toast({ title: "Application withdrawn", variant: "success" }); },
   });
 
   return (

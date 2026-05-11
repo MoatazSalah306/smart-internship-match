@@ -14,4 +14,13 @@ class ApplicationPolicy
         }
         return false;
     }
+
+    public function delete(User $user, Application $application): bool
+    {
+        // Students can withdraw their own pending applications
+        if ($user->role === 'student') {
+            return $user->student->id === $application->student_id;
+        }
+        return false;
+    }
 }

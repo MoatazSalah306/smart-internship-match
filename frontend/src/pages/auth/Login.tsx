@@ -44,7 +44,7 @@ export default function Login() {
       <div className="mono-label text-muted-foreground">Welcome back</div>
       <h1 className="font-display text-5xl font-black mt-2">Sign in</h1>
       <p className="text-muted-foreground mt-3">
-        Choose your role. Backend issues a Sanctum token scoped to that guard.
+        Choose your role to access your personalized internship dashboard.
       </p>
 
       <div className="mt-8 grid grid-cols-3 gap-2 border-2 border-primary p-1 bg-card">

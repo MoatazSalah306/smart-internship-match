@@ -7,7 +7,7 @@ export function SiteFooter() {
           <p className="mono-label text-muted-foreground mt-2">A bold platform for student careers.</p>
         </div>
         <div className="text-sm text-muted-foreground">
-          Built for students, companies, and educators. Multi-guard auth, RBAC, and a match engine that actually works.
+          Connecting ambitious students with forward-thinking companies. The smart way to find your next internship.
         </div>
         <div className="mono-label text-right text-muted-foreground">© {new Date().getFullYear()} — Internly</div>
       </div>

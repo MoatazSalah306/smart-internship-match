@@ -24,8 +24,7 @@ export default function StudentProfile() {
       setForm({
         name: data.name,
         university: data.university ?? "",
-        major: data.major ?? "",
-        graduation_year: data.graduation_year ?? undefined,
+        phone: data.phone ?? "",
         bio: data.bio ?? "",
       });
       setSkillsText((data.skills ?? []).join(", "));
@@ -39,20 +38,20 @@ export default function StudentProfile() {
     }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["student-profile"] });
-      toast({ title: "Profile saved" });
+      toast({ title: "Profile saved", variant: "success" });
     },
     onError: (e) => toast({ title: "Save failed", description: e instanceof ApiError ? e.message : "", variant: "destructive" }),
   });
 
   const upload = useMutation({
     mutationFn: (f: File) => StudentApi.uploadCv(f),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["student-profile"] }); toast({ title: "CV uploaded" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["student-profile"] }); toast({ title: "CV uploaded", variant: "success" }); },
     onError: (e) => toast({ title: "Upload failed", description: e instanceof ApiError ? e.message : "", variant: "destructive" }),
   });
 
   const removeCv = useMutation({
     mutationFn: () => StudentApi.deleteCv(),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["student-profile"] }); toast({ title: "CV removed" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["student-profile"] }); toast({ title: "CV removed", variant: "success" }); },
   });
 
   const onFile = (file: File) => {
@@ -77,7 +76,14 @@ export default function StudentProfile() {
       <div className="grid md:grid-cols-3 gap-6 mt-10">
         <form
           className="md:col-span-2 brutal-card p-8 space-y-5"
-          onSubmit={(e) => { e.preventDefault(); save.mutate(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (form.phone && !/^[0-9]{11}$/.test(form.phone)) {
+              toast({ title: "Invalid phone", description: "Must be exactly 11 digits.", variant: "destructive" });
+              return;
+            }
+            save.mutate();
+          }}
         >
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Name">
@@ -86,11 +92,8 @@ export default function StudentProfile() {
             <Field label="University">
               <Input value={form.university ?? ""} onChange={(e) => setForm((f) => ({ ...f, university: e.target.value }))} maxLength={150} />
             </Field>
-            <Field label="Major">
-              <Input value={form.major ?? ""} onChange={(e) => setForm((f) => ({ ...f, major: e.target.value }))} maxLength={120} />
-            </Field>
-            <Field label="Graduation year">
-              <Input type="number" min={2000} max={2100} value={form.graduation_year ?? ""} onChange={(e) => setForm((f) => ({ ...f, graduation_year: e.target.value ? Number(e.target.value) : undefined }))} />
+            <Field label="Phone number">
+              <Input value={form.phone ?? ""} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} maxLength={20} placeholder="+123456789" />
             </Field>
           </div>
 
@@ -111,13 +114,22 @@ export default function StudentProfile() {
           <div className="mono-label text-muted-foreground">CV</div>
           <h2 className="font-display text-2xl font-black mt-1">Your resume</h2>
           {data?.cv_url ? (
-            <div className="mt-4">
-              <a href={data.cv_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-accent">
-                <FileText className="h-4 w-4" /> {data.cv_filename ?? "Current CV"}
-              </a>
-              <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => removeCv.mutate()} disabled={removeCv.isPending}>
-                <Trash2 className="h-4 w-4 mr-2" /> Remove
-              </Button>
+            <div className="mt-4 space-y-4">
+              <div className="border-2 border-primary brutal-card p-2 bg-muted/10 overflow-hidden">
+                <iframe
+                  src={data.cv_url}
+                  className="w-full h-[400px] border-none rounded-sm"
+                  title="CV Preview"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <a href={data.cv_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-accent hover:underline text-sm font-bold">
+                  <FileText className="h-4 w-4" /> Open in new tab
+                </a>
+                <Button variant="outline" size="sm" className="w-full" onClick={() => removeCv.mutate()} disabled={removeCv.isPending}>
+                  <Trash2 className="h-4 w-4 mr-2" /> Remove CV
+                </Button>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground mt-2">No CV uploaded yet.</p>

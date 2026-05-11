@@ -71,7 +71,7 @@ class ApplicationController extends Controller
         $this->authorize('update', $application);
 
         $request->validate([
-            'status' => 'required|in:pending,accepted,rejected',
+            'status' => 'required|in:pending,reviewed,accepted,rejected',
         ]);
 
         $application->update(['status' => $request->status]);

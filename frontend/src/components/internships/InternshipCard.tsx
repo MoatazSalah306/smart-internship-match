@@ -14,12 +14,15 @@ export function InternshipCard({ internship, hrefBase = "/internships" }: { inte
           </div>
           <h3 className="font-display text-2xl font-black mt-1 group-hover:text-accent truncate">{i.title}</h3>
         </div>
-        {typeof i.match_score === "number" && (
-          <div className="shrink-0 text-right">
-            <div className="font-display text-3xl font-black text-accent leading-none">{Math.round(i.match_score)}%</div>
-            <div className="mono-label text-muted-foreground">match</div>
-          </div>
-        )}
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          {i.has_applied && <Badge variant="success">Applied</Badge>}
+          {typeof i.match_score === "number" && (
+            <div className="text-right">
+              <div className="font-display text-3xl font-black text-accent leading-none">{Math.round(i.match_score)}%</div>
+              <div className="mono-label text-muted-foreground">match</div>
+            </div>
+          )}
+        </div>
       </div>
 
       <p className="text-muted-foreground mt-3 line-clamp-2 text-sm">{i.description}</p>

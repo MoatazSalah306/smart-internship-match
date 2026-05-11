@@ -22,7 +22,7 @@ class StudentProfileController extends Controller
 
         $validated = $request->validate([
             'bio' => 'nullable|string',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|regex:/^[0-9]{11}$/',
             'university' => 'nullable|string|max:255',
             'skills' => 'array',
             'skills.*' => 'string',
